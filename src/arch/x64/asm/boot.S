@@ -1,17 +1,17 @@
-/* 
+/*
  * This file is part of the Nautilus AeroKernel developed
- * by the Hobbes and V3VEE Projects with funding from the 
- * United States National  Science Foundation and the Department of Energy.  
+ * by the Hobbes and V3VEE Projects with funding from the
+ * United States National  Science Foundation and the Department of Energy.
  *
  * The V3VEE Project is a joint project between Northwestern University
  * and the University of New Mexico.  The Hobbes Project is a collaboration
- * led by Sandia National Laboratories that includes several national 
+ * led by Sandia National Laboratories that includes several national
  * laboratories and universities. You can find out more at:
  * http://www.v3vee.org  and
  * http://xtack.sandia.gov/hobbes
  *
  * Copyright (c) 2015, Kyle C. Hale <kh@u.northwestern.edu>
- * Copyright (c) 2015, The V3VEE Project  <http://www.v3vee.org> 
+ * Copyright (c) 2015, The V3VEE Project  <http://www.v3vee.org>
  *                     The Hobbes Project <http://xstack.sandia.gov/hobbes>
  * All rights reserved.
  *
@@ -21,50 +21,106 @@
  * redistribute, and modify it as specified in the file "LICENSE.txt".
  */
 
+/*
+* This header makes us multi-boot compliant
+* multiboot_hdr:
+*     .long 0xe85250d6
+*     // architecture
+*     .long 0
+*     // header length
+*     .long hdr_end - multiboot_hdr
+*     // checksum?
+*     .long -(0xe85250d6 + 0 + (hdr_end - multiboot_hdr))
+*
+*     BEGIN TAGS
+*     sections
+*
+*     .word 2, 0
+*     .long 24
+*     .long multiboot_hdr
+*     .long _loadStart
+*     .long _loadEnd
+*     .long _bssEnd
+*
+*     entry point
+*     .word 3, 0
+*     .long 16
+*     .long nautilus_entry
+*     .long 0
+*
+*     tags end
+*     .word 0, 0
+*     .long 8
+* hdr_end:
+*/
+
+/*
+ * format of a payload segment
+ *
+ * struct cbfs_payload_segment {
+ * 	uint32_t type; # magic number
+ * 	uint32_t compression; # should be 0
+ * 	uint32_t offset; # offset in file? we will make this the same as the load
+ *  addr using objcopy with nautilus.bin and load it to a binary, something
+ *  like "objcopy nautilus.bin -O binary"
+ * 	uint64_t load_addr; # where to load in memory?
+ * 	uint32_t len; # this and mem_len can be determined with subtraction
+ * 	uint32_t mem_len;
+ * } __packed;
+ */
+
 .code32
-.section .mbhdr
+.section .cbhdr
 .align 8
 
+cbcdhdr:
+    .extern _text_start
+    .extern _text_size
+
+    .long 0x434F4445 /* PAYLOAD_SEGMENT_CODE */
+    .long 0
+    .long _text_start
+    .quad _text_start
+    .long _text_size
+    .long _text_size
+
+cbdahdr:
+    .extern _data_start
+    .extern _data_size
+
+    .long 0x44415441 /* PAYLOAD_SEGMENT_DATA */
+    .long 0
+    .long _data_start
+    .quad _data_start
+    .long _data_size
+    .long _data_size
+
+cbbshdr:
+    .extern _bssStart
+    .extern _bssSize
+
+    .long 0x42535320 /* PAYLOAD_SEGMENT_BSS */
+    .long 0
+    .long _bssStart
+    .quad _bssStart
+    .long _bssSize
+    .long _bssSize
+
+entry:
+    .extern nautilus_entry
+
+    .long 0x454E5452 /* PAYLOAD_SEGMENT_ENTRY */
+    .long 0
+    .long nautilus_entry
+    .quad nautilus_entry
+/* length fields are ignored */
+
+#include <asm/lowlevel.h>
 .extern boot_stack_end
 .extern boot_stack_start
 
 .extern boot_stack_init
 .extern threaded_init
-
-#include <asm/lowlevel.h>
-
-/**
- * This header makes us multi-boot compliant
- */
-multiboot_hdr:
-    .long 0xe85250d6
-    .long 0
-    .long hdr_end - multiboot_hdr
-    .long -(0xe85250d6 + 0 + (hdr_end - multiboot_hdr))
-
-    /* BEGIN TAGS */
-
-    /* sections */
- 
-    .word 2, 0
-    .long 24
-    .long multiboot_hdr
-    .long _loadStart
-    .long _loadEnd
-    .long _bssEnd
-
-    /* entry point */
-    .word 3, 0
-    .long 16
-    .long nautilus_entry
-    .long 0
-
-    /* tags end */
-    .word 0, 0
-    .long 8
-hdr_end:
-
-.section .boot
 
 /**
  * our entry point into the kernel, this is where
@@ -109,7 +165,9 @@ GLOBAL(nautilus_entry)
     movq $boot_stack_end, %rsp
     movq %rsp, %rbp
 
-    /* multiboot info is still in rdi and rsi */
+    /*
+     * multiboot info is still in rdi and rsi
+     * calls boot_*/
     movq $boot_stack_init, %rax
     callq *%rax
 
@@ -133,12 +191,12 @@ paging_longmode_setup:
     movl $pml4, %ebx
     movl %eax, (%ebx)
 
-    // PDPT[0] -> PDT 
+    // PDPT[0] -> PDT
     movl $pd, %eax
     orl $0x3, %eax
     movl $pdpt, %ebx
     movl %eax, (%ebx)
-   
+
     //set first 4 entry of PDPT 4GB total
     movl $4, %ecx
     movl $pd, %edx
@@ -153,12 +211,12 @@ paging_longmode_setup:
     movl %eax, (%edx)
     addl $0x200000, %eax
     addl $0x8, %edx
-    loop .write_pde 
-    
+    loop .write_pde
+
     push %edx
     orl $0x3, %edx
     addl $0x8, %ebx  //next entry of pdpt
-    movl %edx, (%ebx) 
+    movl %edx, (%ebx)
     pop %edx
     pop %ecx
     loop .write_pdpe
@@ -190,7 +248,7 @@ paging_longmode_setup:
     movl %eax, %cr0
 
     ret
-     
+
 .align 8
 gdt32:
     .quad 0x0000000000000000 /* null */

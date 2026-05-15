@@ -2,13 +2,18 @@ ENTRY(nautilus_entry)
 
 SECTIONS
 {
+
     . = 0x100000;
+
+    .cbhdr :
+    {
+        *(.cbhdr)
+    }
 
     .boot :
     {
-        *(.mbhdr)
         _loadStart = .;
-        *(.boot)
+        *(.entry)
         . = ALIGN(4096);
         pml4 = .;
         . += 0x1000;
@@ -22,12 +27,17 @@ SECTIONS
         boot_stack_end = .;
     }
 
+    _text_start = .;
 
-    .text ALIGN(0x1000) : 
+    .text ALIGN(0x1000) :
     {
-        *(.text*)
+        /* from all files, find all sections that start with .text and put them here */
+        /* add a text variable so we know where this section begins */
+        *(.text*) /* this refers to code basically */
         *(.gnu.linkonce.t*)
     }
+
+    _text_size = . - _text_start;
 
     .init ALIGN(0x1000) : AT(ADDR(.text) + SIZEOF(.text))
     {
@@ -57,13 +67,14 @@ SECTIONS
         *(.gnu.linkonce.gcc_except*)
     }
 
-    _data_start = . ;    
+    _data_start = .;
 
     .data ALIGN(0x1000) : AT(ADDR(.gcc_except_table) + SIZEOF(.gcc_except_table))
     {
-        *(.data*)
+        *(.data*) /* put all .data sections here */
         *(.gnu.linkonce.d*)
     }
+
 
     .tests ALIGN(0x1000) : AT(ADDR(.data) + SIZEOF(.data))
     {
@@ -78,7 +89,7 @@ SECTIONS
         *(.cmdline_flags*);
         __stop_flags = .;
     }
-   
+
     .got ALIGN(0x1000) : AT(ADDR(.cmdline_flags)+SIZEOF(.cmdline_flags))
     {
         *(.got*)
@@ -88,7 +99,7 @@ SECTIONS
 /* Needs to be RW */
 #include "init_stages.ld.inc"
 
-#include "rodata_common.ld.inc"
+#include "rodata_common.ld.inc" /* read-only data (rodata), e.g. string literals) */
 
    .tdata  ALIGN(0x1000) : AT(ADDR(.alloc_impls)+SIZEOF(.alloc_impls))
    {
@@ -99,7 +110,7 @@ SECTIONS
        _tdata_end = .;
    }
 
-  
+
    _loadEnd = .;
    .tbss : AT(ADDR(.tdata)+SIZEOF(.tdata))
    {
@@ -109,20 +120,24 @@ SECTIONS
        . += 0x1000;
        _tbss_end = .;
    }
-  
+
    _bssStart = .;
+
    .bss ALIGN(0x1000) : AT(ADDR(.tbss)+SIZEOF(.tbss))
     {
         *(COMMON)
         *(.bss*)
         *(.gnu.linkonce.b*)
     }
-    
+
     _bssEnd = .;
-   
+
+    _bssSize = _bssEnd - _bssStart;
+
     _data_end = .;
-   
-    
+
+    _data_size = _data_end - _data_start;
+
     /DISCARD/ :
     {
         *(.note*) /* qemu -kernel doesn't work without the PVH note section */
