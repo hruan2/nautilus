@@ -1,5 +1,6 @@
 
-  .rodata ALIGN(0x1000) : {
+  .rodata ALIGN(0x1000) : AT(ADDR(.rodata))
+  {
     *(.srodata .srodata.*) /* do not need to distinguish this from .rodata */
     . = ALIGN(0x1000);
     *(.rodata .rodata.*)
@@ -29,7 +30,7 @@
       *(.aspace_impls*);
       __stop_aspace_impls = .;
   }
-    
+
   .alloc_impls ALIGN(0x1000) : {
       __start_alloc_impls = .;
       *(.alloc_impls*);
