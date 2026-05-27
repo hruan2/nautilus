@@ -1,17 +1,17 @@
-/* 
+/*
  * This file is part of the Nautilus AeroKernel developed
- * by the Hobbes and V3VEE Projects with funding from the 
- * United States National  Science Foundation and the Department of Energy.  
+ * by the Hobbes and V3VEE Projects with funding from the
+ * United States National  Science Foundation and the Department of Energy.
  *
  * The V3VEE Project is a joint project between Northwestern University
  * and the University of New Mexico.  The Hobbes Project is a collaboration
- * led by Sandia National Laboratories that includes several national 
+ * led by Sandia National Laboratories that includes several national
  * laboratories and universities. You can find out more at:
  * http://www.v3vee.org  and
  * http://xstack.sandia.gov/hobbes
  *
  * Copyright (c) 2015, Kyle C. Hale <kh@u.northwestern.edu>
- * Copyright (c) 2015, The V3VEE Project  <http://www.v3vee.org> 
+ * Copyright (c) 2015, The V3VEE Project  <http://www.v3vee.org>
  *                     The Hobbes Project <http://xstack.sandia.gov/hobbes>
  * All rights reserved.
  *
@@ -92,7 +92,7 @@
 #include <nautilus/watchdog.h>
 #endif
 
-#ifdef NAUT_CONFIG_ENABLE_REMOTE_DEBUGGING 
+#ifdef NAUT_CONFIG_ENABLE_REMOTE_DEBUGGING
 #include <nautilus/gdb-stub.h>
 #endif
 
@@ -146,7 +146,7 @@
 #include <nautilus/vmm.h>
 #endif
 
-#ifdef NAUT_CONFIG_REAL_MODE_INTERFACE 
+#ifdef NAUT_CONFIG_REAL_MODE_INTERFACE
 #include <arch/x64/realmode.h>
 #endif
 
@@ -198,7 +198,7 @@ struct nk_sched_config sched_cfg = {
 
 
 
-static int 
+static int
 sysinfo_init (struct sys_info * sys)
 {
     sys->core_barrier = (nk_barrier_t*)malloc(sizeof(nk_barrier_t));
@@ -252,7 +252,7 @@ runtime_init (void)
 #ifdef NAUT_CONFIG_OPENMP_RT
 	nk_openmp_init();
 #endif
-	
+
 }
 
 
@@ -269,7 +269,7 @@ static int launch_vmm_environment()
 #ifdef NAUT_CONFIG_PALACIOS_MGMT_VM
   extern int guest_start;
   mgmt_vm = nk_vmm_start_vm("management-vm",&guest_start,0xffffffff);
-  if (!mgmt_vm) { 
+  if (!mgmt_vm) {
     ERROR_PRINT("Failed to start embedded management VM\n");
     return -1;
   }
@@ -282,7 +282,7 @@ static int launch_vmm_environment()
 
 /*
   You can add a script here that the shell will run at startup
-  
+
 char *script[] = { "meminfo",
                    "allocator_test_trace dumb 0 2",
                    "\0",
@@ -293,24 +293,32 @@ char *script[] = { "sigtest",
                     0 };
 */
 
+// cbd is now a pointer to the start of the coreboot tables, magic is junk
+// and is only used in the multiboot_parse function
 void *
-boot_stack_init (unsigned long mbd,
+boot_stack_init (unsigned long cbd,
       unsigned long magic)
 {
+    // (gdb) print *(naut->sys)
+    // i.e. dereference naut->sys and print out whatever is there
     struct naut_info * naut = &nautilus_info;
 
 
     // At this point, we have no FPU, so we need to be
     // sure that nothing we invoke could be using SSE or
     // similar due to compiler optimization
-    
+
     nk_low_level_memset(naut, 0, sizeof(struct naut_info));
 
+    // set up display/screen so we can have output -> write out to screen using
+    // array of characters in memory; zeroes out screen array (makes all black)
+    // and puts cursor at (0, 0), or wherever you want to start showing output
     vga_early_init();
 
+    // basically set up vector instructions
     fpu_init(naut);
 
-    // At this point we have VGA output only    
+    // At this point we have VGA output only
     if(x86_irq_vector_init(&naut->sys)) {
       //Nothing we can really do
       panic("Couldn't initialize x86 vector IRQ descriptors!\n");
@@ -324,14 +332,20 @@ boot_stack_init (unsigned long mbd,
 
     nk_handle_init_stage_silent();
 
+    // set up blank interrupt descriptor table (IDT) and point IDT register
+    // (IDTR) to it
     setup_idt();
 
 #ifdef NAUT_CONFIG_PC_8250_UART
 #else
-    // Bring serial device up early so we can have output
+    // Bring serial port device up early so we can have output
+    // early init because we're early in the boot device, but later on, we
+    // will reinitialize properly
     serial_early_init();
 #endif
 
+    // memory type range register: every address has different memory types and
+    // different things you can do to the memory
     nk_mtrr_init();
 
 #ifdef NAUT_CONFIG_PARALLEL_PORT_GPIO
@@ -339,20 +353,22 @@ boot_stack_init (unsigned long mbd,
     nk_port_gpio_cpu_mask_add(1); // consider cpu 1 writes only
 #endif
 
-#ifdef NAUT_CONFIG_ENABLE_REMOTE_DEBUGGING 
+#ifdef NAUT_CONFIG_ENABLE_REMOTE_DEBUGGING
     nk_gdb_init();
 #endif
- 
+
     detect_cpu();
 
     nk_handle_init_stage_static();
 
-    /* setup the temporary boot-time allocator */
-    mm_boot_init(mbd);
+    /* base boot gets to here before freezing
+     * setup the temporary boot-time allocator
+     * */
+    mm_boot_init(cbd);
 
     nk_handle_init_stage_boot();
 
-    naut->sys.mb_info = multiboot_parse(mbd, magic);
+    naut->sys.mb_info = multiboot_parse(cbd, magic);
     if (!naut->sys.mb_info) {
         ERROR_PRINT("Problem parsing multiboot header\n");
     }
@@ -362,12 +378,12 @@ boot_stack_init (unsigned long mbd,
     /* enumerate CPUs and initialize them */
     smp_early_init(naut);
 
-    /* this will populate NUMA-related structures and 
+    /* this will populate NUMA-related structures and
      * also initialize the relevant ACPI tables if they exist */
     nk_numa_init();
 
     /* this will finish up the identity map */
-    nk_paging_init(&(naut->sys.mem), mbd);
+    nk_paging_init(&(naut->sys.mem), cbd);
 
     /* setup the main kernel memory allocator */
     nk_kmem_init();
@@ -410,7 +426,7 @@ boot_stack_init (unsigned long mbd,
     i8254_init(naut);
 
     nk_future_init();
-    
+
     nk_timer_init();
 
     //apic_init();
@@ -419,7 +435,7 @@ boot_stack_init (unsigned long mbd,
     nk_rand_init(naut->sys.cpus[0]);
 
     nk_semaphore_init();
-    
+
     nk_msg_queue_init();
 
     ps2_init(naut);
@@ -439,7 +455,7 @@ boot_stack_init (unsigned long mbd,
 #else
     nk_cache_part_init(NAUT_CONFIG_CACHEPART_THREAD_DEFAULT_PERCENT,0);
 #endif
-#endif    
+#endif
 
     nk_thread_group_init();
     nk_group_sched_init();
@@ -456,7 +472,7 @@ threaded_init(void) {
 
     smp_setup_xcall_bsp(naut->sys.cpus[0]);
 
-    nk_cpu_topo_discover(naut->sys.cpus[0]); 
+    nk_cpu_topo_discover(naut->sys.cpus[0]);
 
 #ifdef NAUT_CONFIG_HPET
     nk_hpet_init();
@@ -466,7 +482,7 @@ threaded_init(void) {
     nk_instrument_init();
 #endif
 
-#ifdef NAUT_CONFIG_REAL_MODE_INTERFACE 
+#ifdef NAUT_CONFIG_REAL_MODE_INTERFACE
     nk_real_mode_init();
 #endif
 
@@ -497,7 +513,7 @@ threaded_init(void) {
     extern void nk_cxx_init(void);
     // Assuming we don't encounter C++ before here
     nk_cxx_init();
-#endif 
+#endif
 
     // reinit the early-initted devices now that
     // we have malloc and the device framework functional
@@ -512,7 +528,7 @@ threaded_init(void) {
 #endif
 
     nk_sched_start();
-    
+
 #ifdef NAUT_CONFIG_FIBER_ENABLE
     nk_fiber_init();
     nk_fiber_startup();
@@ -525,11 +541,11 @@ threaded_init(void) {
 #ifdef NAUT_CONFIG_USE_IST
     nk_gdt_init();
 #endif
-    
+
     arch_enable_ints();
 
     nk_handle_init_stage_sched();
-    
+
     //nk_dump_all_irq();
 
     /* interrupts are now on */
@@ -561,7 +577,7 @@ threaded_init(void) {
 #endif
 
     nk_handle_init_stage_driver();
-    
+
     nk_handle_init_stage_fs();
 
     nk_linker_init(naut);
@@ -570,6 +586,7 @@ threaded_init(void) {
     // nk_loader_init();
 
     nk_pmc_init(naut);
+
 
     launch_vmm_environment();
 
@@ -585,13 +602,13 @@ threaded_init(void) {
 #ifdef NAUT_CONFIG_WATCHDOG
     nk_watchdog_init(NAUT_CONFIG_WATCHDOG_DEFAULT_TIME_MS * 1000000UL);
 #endif
-    
+
 #ifdef NAUT_CONFIG_LINUX_SYSCALLS
     // Initialize inux system call interface
     nk_syscall_init();
     init_syscall_table();
 #endif
- 
+
     nk_handle_init_stage_launch();
 
     runtime_init();
