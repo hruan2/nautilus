@@ -21,27 +21,33 @@
  * redistribute, and modify it as specified in the file "LICENSE.txt".
  */
 
-.code32
-.align 8
+/*
+ * use cbfs tool to generate the proper segments:
+ * util/cbfstool/cbfstool build/coreboot.rom remove -n fallback/payload
+ * util/cbfstool/cbfstool build/coreboot.rom add-payload \
+ *     -f ../nautilus/nautilus.bin -n fallback/payload
+ */
 
-#include <asm/lowlevel.h>
 .extern boot_stack_end
 .extern boot_stack_start
 
 .extern boot_stack_init
 .extern threaded_init
 
+#include <asm/lowlevel.h>
+
+.code32
+.align 8
 /**
  * our entry point into the kernel, this is where
- * GRUB2 will drop us
+ * coreboot will drop us
  */
 GLOBAL(nautilus_entry)
 
-    /* get GRUB multiboot info and stash it */
-    movl %ebx, %edi
-    movl %eax, %esi
+    /* get pointer to coreboot tables and stash it */
+    movl 4(%esp), %edi
 
-    /* don't trust GRUB's protected-mode GDT */
+    /* don't trust coreboot's protected-mode GDT */
     movl $gdtr32, %eax
     lgdt (%eax)
     ljmp $0x8, $.gdt1_is_go
@@ -75,8 +81,9 @@ GLOBAL(nautilus_entry)
     movq %rsp, %rbp
 
     /*
-     * multiboot info is still in rdi and rsi
+     * coreboot info is in rdi (first argument to function)
      * calls boot_*/
+    // this is init.c?
     movq $boot_stack_init, %rax
     callq *%rax
 
