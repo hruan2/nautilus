@@ -25,8 +25,6 @@
 #include <nautilus/mm.h>
 #include <nautilus/paging.h>
 #include <nautilus/arch.h>
-#include <nautilus/mb_utils.h>
-// #include <nautilus/multiboot2.h>
 #include <nautilus/coreboot.h>
 #include <nautilus/macros.h>
 #include <lib/bitmap.h>
@@ -196,7 +194,7 @@ mm_boot_init (ulong_t cbd)
 #endif
 #ifdef NAUT_CONFIG_ARCH_X86
     // replace with load end, and we pretend that there are no extra modules
-    // to load lol
+    // to load (which there probably won't be anyway)
     addr_t kern_end = (addr_t) &_loadEnd;
 #endif
 #ifdef NAUT_CONFIG_ARCH_ARM64
@@ -210,8 +208,8 @@ mm_boot_init (ulong_t cbd)
     BMM_PRINT("Setting up boot memory allocator\n");
     memset(&mm_info, 0, sizeof(mm_info));
 
-    /* parse the multiboot2 memory map or the device tree, filing in
-     * some global data that we will subsequently use here  */
+    /* parse the coreboot memory map or the device tree, filling in
+     * some global data that we will subsequently use here */
     detect_mem_map(cbd);
 
     npages = mm_info.last_pfn + 1;
