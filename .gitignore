@@ -83,3 +83,6 @@ uImage
 output.txt
 ct.out
 /result
+
+# gdb scripts
+*.gdb
