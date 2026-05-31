@@ -34,7 +34,7 @@
 #include <nautilus/init.h>
 #include <nautilus/paging.h>
 #include <nautilus/spinlock.h>
-#include <nautilus/mb_utils.h>
+#include <nautilus/cb_utils.h>
 #include <nautilus/cpu.h>
 #include <nautilus/smp.h>
 #include <nautilus/interrupt.h>
@@ -293,11 +293,8 @@ char *script[] = { "sigtest",
                     0 };
 */
 
-// cbd is now a pointer to the start of the coreboot tables, magic is junk
-// and is only used in the multiboot_parse function
 void *
-boot_stack_init (unsigned long cbd,
-      unsigned long magic)
+boot_stack_init (unsigned long cbd)
 {
     // (gdb) print *(naut->sys)
     // i.e. dereference naut->sys and print out whatever is there
@@ -361,17 +358,14 @@ boot_stack_init (unsigned long cbd,
 
     nk_handle_init_stage_static();
 
-    /* base boot gets to here before freezing
-     * setup the temporary boot-time allocator
-     * */
     mm_boot_init(cbd);
 
+    // this is empty (no functions are added via nk_declare_boot_init, and
+    // the objdump of the file also indicates that this is empty)
     nk_handle_init_stage_boot();
 
-    naut->sys.mb_info = multiboot_parse(cbd, magic);
-    if (!naut->sys.mb_info) {
-        ERROR_PRINT("Problem parsing multiboot header\n");
-    }
+    // lowkey unnecessary
+    coreboot_parse(cbd);
 
     nk_acpi_init();
 
@@ -580,8 +574,8 @@ threaded_init(void) {
 
     nk_handle_init_stage_fs();
 
-    nk_linker_init(naut);
-    nk_prog_init(naut);
+    // nk_linker_init(naut);
+    // nk_prog_init(naut);
 
     // nk_loader_init();
 
