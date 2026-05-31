@@ -2,7 +2,8 @@
 #define __LINKER__
 #include "../include/nautilus/init_stages.h"
 
-.init_stages ALIGN(0x1000) : {
+.init_stages ALIGN(0x1000) : AT(ADDR(.init_stages))
+{
 
 #define X(STAGE) \
   __start_init_stage_ ## STAGE = .;\
