@@ -54,6 +54,10 @@ arch_detect_mem_map (mmap_info_t *mm_info,
                      mem_map_entry_t *memory_map,
                      unsigned long cbd)
 {
+    if (cbd & LB_ENTRY_ALIGN) {
+        panic("ERROR: Unaligned coreboot header struct\n");
+    }
+
     struct lb_header *tables_header = (struct lb_header *) cbd;
     uint32_t header_size = tables_header->header_bytes;
     uint32_t tables_size = tables_header->table_bytes;
@@ -92,27 +96,36 @@ arch_detect_mem_map (mmap_info_t *mm_info,
     int mem_type = 0;
     for (unsigned long entry = 0; entry < total_entries; ++entry) {
         start = round_up(memory_range->start, PAGE_SIZE_4KB);
-        end = round_down(memory_range->start + memory_range->size, PAGE_SIZE_4KB);
+        if (entry == total_entries - 1) {
+            // force the memory range to extend to 4GB instead of the 3GB
+            end = 0x100000000UL;
+        }
+        else {
+            end = round_down(memory_range->start + memory_range->size, PAGE_SIZE_4KB);
+        }
 
         memory_map[entry].addr = start;
         memory_map[entry].len = end - start;
 
         // convert memory type appropriately to use with mem_region_types
-        switch (memory_map[entry].type) {
-            case LB_MEM_TABLE:
+        switch (memory_range->type) {
+            case LB_MEM_TABLE: {
                 mem_type = LB_MEM_TABLE_EQUIV;
                 break;
+            }
 
-            case LB_MEM_TAG:
+            case LB_MEM_TAG: {
                 mem_type = LB_MEM_TAG_EQUIV;
                 break;
+            }
 
-            case LB_MEM_SOFT_RESERVED:
+            case LB_MEM_SOFT_RESERVED: {
                 mem_type = LB_MEM_SOFT_RESERVED_EQUIV;
                 break;
+            }
 
             default:
-                mem_type = memory_map[entry].type;
+                mem_type = memory_range->type;
         }
 
         memory_map[entry].type = mem_type;
