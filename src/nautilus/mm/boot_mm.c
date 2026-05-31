@@ -240,9 +240,12 @@ mm_boot_init (ulong_t cbd)
     mm_boot_reserve_mem(kern_start, kern_size);
 #endif
 
-    /* reserve the zero page */
+    /* reserve the zero page; with coreboot, this is redundant because coreboot
+     * marks this section with LB_MEM_TABLE
+     */
     mm_boot_reserve_mem(0, PAGE_SIZE);
 
+    // this seemingly does nothing
     arch_reserve_boot_regions(cbd);
 
     return 0;
