@@ -119,149 +119,249 @@ static nk_scancode_t switcher_scancode_queue[SCAN_MAX_QUEUE];
 #define KB_KEY_RELEASE 0x80
 
 static const nk_keycode_t NoShiftNoCaps[] = {
-    KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
-    KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
-    KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
-    KEY_F4, '\t', '`', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
-    KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
-    KEY_LCTRL, 'q', '1', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'z', 's',                   /* 0x18 - 0x1B */
-    'a', 'w', '2', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
-    KEY_UNKNOWN, 'c', 'x', 'd',                           /* 0x20 - 0x23 */
-    'e', '4', '3', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
-    KEY_UNKNOWN, ' ', 'v', 'f',                           /* 0x28 - 0x2B */
-    't', 'r', '5', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
-    KEY_UNKNOWN, 'n', 'b', 'h',                           /* 0x30 - 0x33 */
-    'g', 'y', '6', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'm', 'j',                   /* 0x38 - 0x3B */
-    'u', '7', '8', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
-    KEY_UNKNOWN, ',', 'k', 'i',                           /* 0x40 - 0x43 */
-    'o', '0', '9', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
-    KEY_UNKNOWN, '.', '/', 'l',                           /* 0x48 - 0x4B */
-    ';', 'p', '-', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
-    KEY_UNKNOWN, KEY_UNKNOWN, '\'', KEY_UNKNOWN,          /* 0x50 - 0x53 */
-    '[', '=', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
-    KEY_CAPSLOCK, KEY_RSHIFT, '\r', ']',                  /* 0x58 - 0x5B */
-    KEY_UNKNOWN, '\\', KEY_UNKNOWN, KEY_UNKNOWN,          /* 0x5C - 0x5F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
-    KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
-    KEY_UNKNOWN, KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT,      /* 0x68 - 0x6B */
-    KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
-    KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
-    KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
-    KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
-    KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+    KEY_UNKNOWN, ASCII_ESC, '1', '2',   /* 0x00 - 0x03 */
+    '3', '4', '5', '6',                 /* 0x04 - 0x07 */
+    '7', '8', '9', '0',                 /* 0x08 - 0x0B */
+    '-', '=', ASCII_BS, '\t',           /* 0x0C - 0x0F */
+    'q', 'w', 'e', 'r',                 /* 0x10 - 0x13 */
+    't', 'y', 'u', 'i',                 /* 0x14 - 0x17 */
+    'o', 'p', '[', ']',                 /* 0x18 - 0x1B */
+    '\r', KEY_LCTRL, 'a', 's',          /* 0x1C - 0x1F */
+    'd', 'f', 'g', 'h',                 /* 0x20 - 0x23 */
+    'j', 'k', 'l', ';',                 /* 0x24 - 0x27 */
+    '\'', '`', KEY_LSHIFT, '\\',        /* 0x28 - 0x2B */
+    'z', 'x', 'c', 'v',                 /* 0x2C - 0x2F */
+    'b', 'n', 'm', ',',                 /* 0x30 - 0x33 */
+    '.', '/', KEY_RSHIFT, KEY_PRINTSCRN, /* 0x34 - 0x37 */
+    KEY_LALT, ' ', KEY_CAPSLOCK, KEY_F1, /* 0x38 - 0x3B */
+    KEY_F2, KEY_F3, KEY_F4, KEY_F5,     /* 0x3C - 0x3F */
+    KEY_F6, KEY_F7, KEY_F8, KEY_F9,     /* 0x40 - 0x43 */
+    KEY_F10, KEY_NUMLOCK, KEY_SCRLOCK, KEY_KPHOME,  /* 0x44 - 0x47 */
+    KEY_KPUP, KEY_KPPGUP, KEY_KPMINUS, KEY_KPLEFT,  /* 0x48 - 0x4B */
+    KEY_KPCENTER, KEY_KPRIGHT, KEY_KPPLUS, KEY_KPEND,  /* 0x4C - 0x4F */
+    KEY_KPDOWN, KEY_KPPGDN, KEY_KPINSERT, KEY_KPDEL,  /* 0x50 - 0x53 */
+    KEY_SYSREQ, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,  /* 0x54 - 0x57 */
 };
 
 static const nk_keycode_t ShiftNoCaps[] = {
-    KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
-    KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
-    KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
-    KEY_F4, '\t', '~', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
-    KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
-    KEY_LCTRL, 'Q', '!', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'Z', 'S',                   /* 0x18 - 0x1B */
-    'A', 'W', '@', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
-    KEY_UNKNOWN, 'C', 'X', 'D',                           /* 0x20 - 0x23 */
-    'E', '$', '#', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
-    KEY_UNKNOWN, ' ', 'V', 'F',                           /* 0x28 - 0x2B */
-    'T', 'R', '%', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
-    KEY_UNKNOWN, 'N', 'B', 'H',                           /* 0x30 - 0x33 */
-    'G', 'Y', '^', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'M', 'J',                   /* 0x38 - 0x3B */
-    'U', '&', '*', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
-    KEY_UNKNOWN, '<', 'K', 'I',                           /* 0x40 - 0x43 */
-    'O', ')', '(', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
-    KEY_UNKNOWN, '>', '?', 'L',                           /* 0x48 - 0x4B */
-    ':', 'P', '_', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
-    KEY_UNKNOWN, KEY_UNKNOWN, '"', KEY_UNKNOWN,           /* 0x50 - 0x53 */
-    '{', '+', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
-    KEY_CAPSLOCK, KEY_RSHIFT, '\r', '}',                  /* 0x58 - 0x5B */
-    KEY_UNKNOWN, '|', KEY_UNKNOWN, KEY_UNKNOWN,           /* 0x5C - 0x5F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
-    KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
-    KEY_UNKNOWN, KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT,      /* 0x68 - 0x6B */
-    KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
-    KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
-    KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
-    KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
-    KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+    KEY_UNKNOWN, ASCII_ESC, '!', '@',   /* 0x00 - 0x03 */
+    '#', '$', '%', '^',                 /* 0x04 - 0x07 */
+    '&', '*', '(', ')',                 /* 0x08 - 0x0B */
+    '_', '+', ASCII_BS, '\t',           /* 0x0C - 0x0F */
+    'Q', 'W', 'E', 'R',                 /* 0x10 - 0x13 */
+    'T', 'Y', 'U', 'I',                 /* 0x14 - 0x17 */
+    'O', 'P', '{', '}',                 /* 0x18 - 0x1B */
+    '\r', KEY_LCTRL, 'A', 'S',          /* 0x1C - 0x1F */
+    'D', 'F', 'G', 'H',                 /* 0x20 - 0x23 */
+    'J', 'K', 'L', ':',                 /* 0x24 - 0x27 */
+    '"', '~', KEY_LSHIFT, '|',          /* 0x28 - 0x2B */
+    'Z', 'X', 'C', 'V',                 /* 0x2C - 0x2F */
+    'B', 'N', 'M', '<',                 /* 0x30 - 0x33 */
+    '>', '?', KEY_RSHIFT, KEY_PRINTSCRN, /* 0x34 - 0x37 */
+    KEY_LALT, ' ', KEY_CAPSLOCK, KEY_F1, /* 0x38 - 0x3B */
+    KEY_F2, KEY_F3, KEY_F4, KEY_F5,     /* 0x3C - 0x3F */
+    KEY_F6, KEY_F7, KEY_F8, KEY_F9,     /* 0x40 - 0x43 */
+    KEY_F10, KEY_NUMLOCK, KEY_SCRLOCK, KEY_KPHOME,  /* 0x44 - 0x47 */
+    KEY_KPUP, KEY_KPPGUP, KEY_KPMINUS, KEY_KPLEFT,  /* 0x48 - 0x4B */
+    KEY_KPCENTER, KEY_KPRIGHT, KEY_KPPLUS, KEY_KPEND,  /* 0x4C - 0x4F */
+    KEY_KPDOWN, KEY_KPPGDN, KEY_KPINSERT, KEY_KPDEL,  /* 0x50 - 0x53 */
+    KEY_SYSREQ, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,  /* 0x54 - 0x57 */
 };
 
 static const nk_keycode_t NoShiftCaps[] = {
-    KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
-    KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
-    KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
-    KEY_F4, '\t', '`', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
-    KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
-    KEY_LCTRL, 'Q', '1', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'Z', 'S',                   /* 0x18 - 0x1B */
-    'A', 'W', '2', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
-    KEY_UNKNOWN, 'C', 'X', 'D',                           /* 0x20 - 0x23 */
-    'E', '4', '3', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
-    KEY_UNKNOWN, ' ', 'V', 'F',                           /* 0x28 - 0x2B */
-    'T', 'R', '5', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
-    KEY_UNKNOWN, 'N', 'B', 'H',                           /* 0x30 - 0x33 */
-    'G', 'Y', '6', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'M', 'J',                   /* 0x38 - 0x3B */
-    'U', '7', '8', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
-    KEY_UNKNOWN, ',', 'K', 'I',                           /* 0x40 - 0x43 */
-    'O', '0', '9', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
-    KEY_UNKNOWN, '.', '/', 'L',                           /* 0x48 - 0x4B */
-    ';', 'P', '-', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
-    KEY_UNKNOWN, KEY_UNKNOWN, '\'', KEY_UNKNOWN,          /* 0x50 - 0x53 */
-    '[', '=', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
-    KEY_CAPSLOCK, KEY_RSHIFT, '\r', ']',                  /* 0x58 - 0x5B */
-    KEY_UNKNOWN, '\\', KEY_UNKNOWN, KEY_UNKNOWN,          /* 0x5C - 0x5F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
-    KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
-    KEY_UNKNOWN, '1', KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT, /* 0x68 - 0x6B */
-    KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
-    KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
-    KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
-    KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
-    KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+    KEY_UNKNOWN, ASCII_ESC, '1', '2',   /* 0x00 - 0x03 */
+    '3', '4', '5', '6',                 /* 0x04 - 0x07 */
+    '7', '8', '9', '0',                 /* 0x08 - 0x0B */
+    '-', '=', ASCII_BS, '\t',           /* 0x0C - 0x0F */
+    'Q', 'W', 'E', 'R',                 /* 0x10 - 0x13 */
+    'T', 'Y', 'U', 'I',                 /* 0x14 - 0x17 */
+    'O', 'P', '[', ']',                 /* 0x18 - 0x1B */
+    '\r', KEY_LCTRL, 'A', 'S',          /* 0x1C - 0x1F */
+    'D', 'F', 'G', 'H',                 /* 0x20 - 0x23 */
+    'J', 'K', 'L', ';',                 /* 0x24 - 0x27 */
+    '\'', '`', KEY_LSHIFT, '\\',        /* 0x28 - 0x2B */
+    'Z', 'X', 'C', 'V',                 /* 0x2C - 0x2F */
+    'B', 'N', 'M', ',',                 /* 0x30 - 0x33 */
+    '.', '/', KEY_RSHIFT, KEY_PRINTSCRN, /* 0x34 - 0x37 */
+    KEY_LALT, ' ', KEY_CAPSLOCK, KEY_F1, /* 0x38 - 0x3B */
+    KEY_F2, KEY_F3, KEY_F4, KEY_F5,     /* 0x3C - 0x3F */
+    KEY_F6, KEY_F7, KEY_F8, KEY_F9,     /* 0x40 - 0x43 */
+    KEY_F10, KEY_NUMLOCK, KEY_SCRLOCK, KEY_KPHOME,  /* 0x44 - 0x47 */
+    KEY_KPUP, KEY_KPPGUP, KEY_KPMINUS, KEY_KPLEFT,  /* 0x48 - 0x4B */
+    KEY_KPCENTER, KEY_KPRIGHT, KEY_KPPLUS, KEY_KPEND,  /* 0x4C - 0x4F */
+    KEY_KPDOWN, KEY_KPPGDN, KEY_KPINSERT, KEY_KPDEL,  /* 0x50 - 0x53 */
+    KEY_SYSREQ, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,  /* 0x54 - 0x57 */
 };
 
 static const nk_keycode_t ShiftCaps[] = {
-    KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
-    KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
-    KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
-    KEY_F4, '\t', '~', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
-    KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
-    KEY_LCTRL, 'q', '!', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'z', 's',                   /* 0x18 - 0x1B */
-    'a', 'w', '@', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
-    KEY_UNKNOWN, 'c', 'x', 'd',                           /* 0x20 - 0x23 */
-    'e', '$', '#', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
-    KEY_UNKNOWN, ' ', 'v', 'f',                           /* 0x28 - 0x2B */
-    't', 'r', '%', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
-    KEY_UNKNOWN, 'n', 'b', 'h',                           /* 0x30 - 0x33 */
-    'g', 'y', '^', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
-    KEY_UNKNOWN, KEY_UNKNOWN, 'm', 'j',                   /* 0x38 - 0x3B */
-    'u', '&', '*', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
-    KEY_UNKNOWN, '<', 'k', 'i',                           /* 0x40 - 0x43 */
-    'o', ')', '(', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
-    KEY_UNKNOWN, '>', '?', 'l',                           /* 0x48 - 0x4B */
-    ':', 'p', '_', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
-    KEY_UNKNOWN, KEY_UNKNOWN, '"', KEY_UNKNOWN,           /* 0x50 - 0x53 */
-    '{', '+', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
-    KEY_CAPSLOCK, KEY_RSHIFT, '\r', '}',                  /* 0x58 - 0x5B */
-    KEY_UNKNOWN, '|', KEY_UNKNOWN, KEY_UNKNOWN,           /* 0x5C - 0x5F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
-    KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
-    KEY_UNKNOWN, KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT,      /* 0x68 - 0x6B */
-    KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
-    KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
-    KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
-    KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
-    KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
-    KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+    KEY_UNKNOWN, ASCII_ESC, '!', '@',   /* 0x00 - 0x03 */
+    '#', '$', '%', '^',                 /* 0x04 - 0x07 */
+    '&', '*', '(', ')',                 /* 0x08 - 0x0B */
+    '_', '+', ASCII_BS, '\t',           /* 0x0C - 0x0F */
+    'q', 'w', 'e', 'r',                 /* 0x10 - 0x13 */
+    't', 'y', 'u', 'i',                 /* 0x14 - 0x17 */
+    'o', 'p', '{', '}',                 /* 0x18 - 0x1B */
+    '\r', KEY_LCTRL, 'a', 's',          /* 0x1C - 0x1F */
+    'd', 'f', 'g', 'h',                 /* 0x20 - 0x23 */
+    'j', 'k', 'l', ':',                 /* 0x24 - 0x27 */
+    '"', '~', KEY_LSHIFT, '|',          /* 0x28 - 0x2B */
+    'z', 'x', 'c', 'v',                 /* 0x2C - 0x2F */
+    'b', 'n', 'm', '<',                 /* 0x30 - 0x33 */
+    '>', '?', KEY_RSHIFT, KEY_PRINTSCRN, /* 0x34 - 0x37 */
+    KEY_LALT, ' ', KEY_CAPSLOCK, KEY_F1, /* 0x38 - 0x3B */
+    KEY_F2, KEY_F3, KEY_F4, KEY_F5,     /* 0x3C - 0x3F */
+    KEY_F6, KEY_F7, KEY_F8, KEY_F9,     /* 0x40 - 0x43 */
+    KEY_F10, KEY_NUMLOCK, KEY_SCRLOCK, KEY_KPHOME,  /* 0x44 - 0x47 */
+    KEY_KPUP, KEY_KPPGUP, KEY_KPMINUS, KEY_KPLEFT,  /* 0x48 - 0x4B */
+    KEY_KPCENTER, KEY_KPRIGHT, KEY_KPPLUS, KEY_KPEND,  /* 0x4C - 0x4F */
+    KEY_KPDOWN, KEY_KPPGDN, KEY_KPINSERT, KEY_KPDEL,  /* 0x50 - 0x53 */
+    KEY_SYSREQ, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,  /* 0x54 - 0x57 */
 };
 
+
+// static const nk_keycode_t NoShiftNoCaps[] = {
+//     KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
+//     KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
+//     KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
+//     KEY_F4, '\t', '`', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
+//     KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
+//     KEY_LCTRL, 'q', '1', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'z', 's',                   /* 0x18 - 0x1B */
+//     'a', 'w', '2', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
+//     KEY_UNKNOWN, 'c', 'x', 'd',                           /* 0x20 - 0x23 */
+//     'e', '4', '3', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
+//     KEY_UNKNOWN, ' ', 'v', 'f',                           /* 0x28 - 0x2B */
+//     't', 'r', '5', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
+//     KEY_UNKNOWN, 'n', 'b', 'h',                           /* 0x30 - 0x33 */
+//     'g', 'y', '6', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'm', 'j',                   /* 0x38 - 0x3B */
+//     'u', '7', '8', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
+//     KEY_UNKNOWN, ',', 'k', 'i',                           /* 0x40 - 0x43 */
+//     'o', '0', '9', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
+//     KEY_UNKNOWN, '.', '/', 'l',                           /* 0x48 - 0x4B */
+//     ';', 'p', '-', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, '\'', KEY_UNKNOWN,          /* 0x50 - 0x53 */
+//     '[', '=', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
+//     KEY_CAPSLOCK, KEY_RSHIFT, '\r', ']',                  /* 0x58 - 0x5B */
+//     KEY_UNKNOWN, '\\', KEY_UNKNOWN, KEY_UNKNOWN,          /* 0x5C - 0x5F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
+//     KEY_UNKNOWN, KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT,      /* 0x68 - 0x6B */
+//     KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
+//     KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
+//     KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
+//     KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
+//     KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+// };
+//
+// static const nk_keycode_t ShiftNoCaps[] = {
+//     KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
+//     KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
+//     KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
+//     KEY_F4, '\t', '~', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
+//     KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
+//     KEY_LCTRL, 'Q', '!', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'Z', 'S',                   /* 0x18 - 0x1B */
+//     'A', 'W', '@', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
+//     KEY_UNKNOWN, 'C', 'X', 'D',                           /* 0x20 - 0x23 */
+//     'E', '$', '#', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
+//     KEY_UNKNOWN, ' ', 'V', 'F',                           /* 0x28 - 0x2B */
+//     'T', 'R', '%', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
+//     KEY_UNKNOWN, 'N', 'B', 'H',                           /* 0x30 - 0x33 */
+//     'G', 'Y', '^', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'M', 'J',                   /* 0x38 - 0x3B */
+//     'U', '&', '*', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
+//     KEY_UNKNOWN, '<', 'K', 'I',                           /* 0x40 - 0x43 */
+//     'O', ')', '(', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
+//     KEY_UNKNOWN, '>', '?', 'L',                           /* 0x48 - 0x4B */
+//     ':', 'P', '_', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, '"', KEY_UNKNOWN,           /* 0x50 - 0x53 */
+//     '{', '+', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
+//     KEY_CAPSLOCK, KEY_RSHIFT, '\r', '}',                  /* 0x58 - 0x5B */
+//     KEY_UNKNOWN, '|', KEY_UNKNOWN, KEY_UNKNOWN,           /* 0x5C - 0x5F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
+//     KEY_UNKNOWN, KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT,      /* 0x68 - 0x6B */
+//     KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
+//     KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
+//     KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
+//     KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
+//     KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+// };
+//
+// static const nk_keycode_t NoShiftCaps[] = {
+//     KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
+//     KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
+//     KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
+//     KEY_F4, '\t', '`', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
+//     KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
+//     KEY_LCTRL, 'Q', '1', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'Z', 'S',                   /* 0x18 - 0x1B */
+//     'A', 'W', '2', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
+//     KEY_UNKNOWN, 'C', 'X', 'D',                           /* 0x20 - 0x23 */
+//     'E', '4', '3', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
+//     KEY_UNKNOWN, ' ', 'V', 'F',                           /* 0x28 - 0x2B */
+//     'T', 'R', '5', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
+//     KEY_UNKNOWN, 'N', 'B', 'H',                           /* 0x30 - 0x33 */
+//     'G', 'Y', '6', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'M', 'J',                   /* 0x38 - 0x3B */
+//     'U', '7', '8', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
+//     KEY_UNKNOWN, ',', 'K', 'I',                           /* 0x40 - 0x43 */
+//     'O', '0', '9', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
+//     KEY_UNKNOWN, '.', '/', 'L',                           /* 0x48 - 0x4B */
+//     ';', 'P', '-', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, '\'', KEY_UNKNOWN,          /* 0x50 - 0x53 */
+//     '[', '=', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
+//     KEY_CAPSLOCK, KEY_RSHIFT, '\r', ']',                  /* 0x58 - 0x5B */
+//     KEY_UNKNOWN, '\\', KEY_UNKNOWN, KEY_UNKNOWN,          /* 0x5C - 0x5F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
+//     KEY_UNKNOWN, '1', KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT, /* 0x68 - 0x6B */
+//     KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
+//     KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
+//     KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
+//     KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
+//     KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+// };
+//
+// static const nk_keycode_t ShiftCaps[] = {
+//     KEY_UNKNOWN, KEY_F9, KEY_UNKNOWN, KEY_F5,             /* 0x00 - 0x03 */
+//     KEY_F3, KEY_F1, KEY_F2, KEY_F12,                      /* 0x04 - 0x07 */
+//     KEY_UNKNOWN, KEY_F10, KEY_F8, KEY_F6,                 /* 0x08 - 0x0B */
+//     KEY_F4, '\t', '~', KEY_UNKNOWN,                       /* 0x0C - 0x0F */
+//     KEY_UNKNOWN, KEY_LALT, KEY_LSHIFT, KEY_UNKNOWN,       /* 0x10 - 0x13 */
+//     KEY_LCTRL, 'q', '!', KEY_UNKNOWN,                     /* 0x14 - 0x17 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'z', 's',                   /* 0x18 - 0x1B */
+//     'a', 'w', '@', KEY_UNKNOWN,                           /* 0x1C - 0x1F */
+//     KEY_UNKNOWN, 'c', 'x', 'd',                           /* 0x20 - 0x23 */
+//     'e', '$', '#', KEY_UNKNOWN,                           /* 0x24 - 0x27 */
+//     KEY_UNKNOWN, ' ', 'v', 'f',                           /* 0x28 - 0x2B */
+//     't', 'r', '%', KEY_UNKNOWN,                           /* 0x2C - 0x2F */
+//     KEY_UNKNOWN, 'n', 'b', 'h',                           /* 0x30 - 0x33 */
+//     'g', 'y', '^', KEY_UNKNOWN,                           /* 0x34 - 0x37 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, 'm', 'j',                   /* 0x38 - 0x3B */
+//     'u', '&', '*', KEY_UNKNOWN,                           /* 0x3C - 0x3F */
+//     KEY_UNKNOWN, '<', 'k', 'i',                           /* 0x40 - 0x43 */
+//     'o', ')', '(', KEY_UNKNOWN,                           /* 0x44 - 0x47 */
+//     KEY_UNKNOWN, '>', '?', 'l',                           /* 0x48 - 0x4B */
+//     ':', 'p', '_', KEY_UNKNOWN,                           /* 0x4C - 0x4F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, '"', KEY_UNKNOWN,           /* 0x50 - 0x53 */
+//     '{', '+', KEY_UNKNOWN, KEY_UNKNOWN,                   /* 0x54 - 0x57 */
+//     KEY_CAPSLOCK, KEY_RSHIFT, '\r', '}',                  /* 0x58 - 0x5B */
+//     KEY_UNKNOWN, '|', KEY_UNKNOWN, KEY_UNKNOWN,           /* 0x5C - 0x5F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,   /* 0x60 - 0x63 */
+//     KEY_UNKNOWN, KEY_UNKNOWN, ASCII_BS, KEY_UNKNOWN,      /* 0x64 - 0x67 */
+//     KEY_UNKNOWN, KEY_KPEND, KEY_UNKNOWN, KEY_KPLEFT,      /* 0x68 - 0x6B */
+//     KEY_KPHOME, KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN,    /* 0x6C - 0x6F */
+//     KEY_KPINSERT, KEY_KPDEL, KEY_KPDOWN, KEY_KPCENTER,    /* 0x70 - 0x73 */
+//     KEY_KPRIGHT, KEY_KPUP, ASCII_ESC, KEY_NUMLOCK,        /* 0x74 - 0x77 */
+//     KEY_F11, KEY_KPPLUS, KEY_KPPGDN, KEY_KPMINUS,         /* 0x78 - 0x7B */
+//     KEY_UNKNOWN, KEY_KPPGUP, KEY_SCRLOCK, KEY_UNKNOWN,    /* 0x7C - 0x7F */
+//     KEY_UNKNOWN, KEY_UNKNOWN, KEY_UNKNOWN, KEY_F7,        /* 0x80 - 0x83 */
+// };
 
 
 
