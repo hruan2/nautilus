@@ -1,17 +1,17 @@
-/* 
+/*
  * This file is part of the Nautilus AeroKernel developed
- * by the Hobbes and V3VEE Projects with funding from the 
- * United States National  Science Foundation and the Department of Energy.  
+ * by the Hobbes and V3VEE Projects with funding from the
+ * United States National  Science Foundation and the Department of Energy.
  *
  * The V3VEE Project is a joint project between Northwestern University
  * and the University of New Mexico.  The Hobbes Project is a collaboration
- * led by Sandia National Laboratories that includes several national 
+ * led by Sandia National Laboratories that includes several national
  * laboratories and universities. You can find out more at:
  * http://www.v3vee.org  and
  * http://xstack.sandia.gov/hobbes
  *
  * Copyright (c) 2015, Kyle C. Hale <kh@u.northwestern.edu>
- * Copyright (c) 2015, The V3VEE Project  <http://www.v3vee.org> 
+ * Copyright (c) 2015, The V3VEE Project  <http://www.v3vee.org>
  *                     The Hobbes Project <http://xstack.sandia.gov/hobbes>
  * All rights reserved.
  *
@@ -193,7 +193,7 @@ struct sys_info {
 
     struct cpu * cpus[NAUT_CONFIG_MAX_CPUS];
     uint32_t num_cpus;
-    
+
 #ifdef NAUT_CONFIG_ARCH_X86
     struct ioapic * ioapics[NAUT_CONFIG_MAX_IOAPICS];
     uint32_t num_ioapics;
@@ -246,6 +246,9 @@ struct naut_info {
     struct cmdline_state * cmdline;
     struct nk_test_harness * test_info;
 
+    // for use in benchmarking; unused otherwise
+    unsigned long timer_low;
+    unsigned long timer_high;
 };
 
 #ifdef __NAUTILUS_MAIN__
@@ -266,7 +269,7 @@ nk_get_nautilus_info (void)
 #else
 #ifdef NAUT_CONFIG_BEANDIP
 #define INTERRUPT __attribute__((annotate("nohook")))
-#else 
+#else
 #define INTERRUPT
 #endif
 #endif
@@ -292,6 +295,6 @@ nk_get_nautilus_info (void)
 #ifdef __cplusplus
 }
 #endif
-                                               
+
 
 #endif

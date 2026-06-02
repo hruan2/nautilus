@@ -44,6 +44,13 @@
  */
 GLOBAL(nautilus_entry)
 
+    /* get timer from time stamp counter; rdtsc stores higher order bits in
+     * edx and lower order in eax
+     */
+    rdtsc
+    movl %edx, %ebp
+    movl %eax, %esi
+
     /* get pointer to coreboot tables and stash it */
     movl 4(%esp), %edi
 
@@ -76,14 +83,20 @@ GLOBAL(nautilus_entry)
     movw %ax, %fs
     movw %ax, %gs
 
+    // save higher order bits of timer before setting
+    movl %ebp, %edx
+
     // This needs to be at least 16-byte aligned
     movq $boot_stack_end, %rsp
     movq %rsp, %rbp
 
     /*
      * coreboot info is in rdi (first argument to function)
-     * calls boot_*/
-    // this is init.c?
+     * calls boot_
+     * this is init.c? we should be in 64-bit mode now, so we make the second
+     * and third values the timer; hopefully nothing is in rdx that we are
+     * overwriting!
+     */
     movq $boot_stack_init, %rax
     callq *%rax
 

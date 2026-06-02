@@ -29,6 +29,7 @@
 #include <arch/x64/cpuid.h>
 #include <arch/x64/smp.h>
 #include <arch/x64/fpu.h>
+#include <arch/x64/cpu.h>
 
 #include <nautilus/nautilus.h>
 #include <nautilus/init.h>
@@ -294,7 +295,7 @@ char *script[] = { "sigtest",
 */
 
 void *
-boot_stack_init (unsigned long cbd)
+boot_stack_init (unsigned long cbd, unsigned long timer_low, unsigned long timer_high)
 {
     // (gdb) print *(naut->sys)
     // i.e. dereference naut->sys and print out whatever is there
@@ -306,6 +307,9 @@ boot_stack_init (unsigned long cbd)
     // similar due to compiler optimization
 
     nk_low_level_memset(naut, 0, sizeof(struct naut_info));
+
+    naut->timer_low = timer_low;
+    naut->timer_high = timer_high;
 
     // set up display/screen so we can have output -> write out to screen using
     // array of characters in memory; zeroes out screen array (makes all black)
@@ -521,6 +525,8 @@ threaded_init(void) {
     serial_init();
 #endif
 
+    // make sure to never yield until an idle thread is set up? interrupts can
+    // cause a yield so be careful with them
     nk_sched_start();
 
 #ifdef NAUT_CONFIG_FIBER_ENABLE
@@ -607,6 +613,15 @@ threaded_init(void) {
 
     runtime_init();
 
+    // stop timer here
+    unsigned long stop = rdtsc();
+    printk("stop time: %u cycles\n", stop);
+
+    // reconstruct start time
+    unsigned long start = naut->timer_low;
+    start |= (naut->timer_high << 32);
+    printk("actual start time: %u cycles\n", start);
+    printk("time from nautilus entry to before yield: %u cycles \n", stop - start);
 
     printk("Nautilus boot thread yielding (indefinitely)\n");
 
