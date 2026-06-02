@@ -32,6 +32,7 @@
 #include <arch/x64/cpu.h>
 
 #include <nautilus/nautilus.h>
+#include <nautilus/arch.h>
 #include <nautilus/init.h>
 #include <nautilus/paging.h>
 #include <nautilus/spinlock.h>
@@ -615,13 +616,19 @@ threaded_init(void) {
 
     // stop timer here
     unsigned long stop = rdtsc();
-    printk("stop time: %u cycles\n", stop);
 
     // reconstruct start time
     unsigned long start = naut->timer_low;
     start |= (naut->timer_high << 32);
-    printk("actual start time: %u cycles\n", start);
-    printk("time from nautilus entry to before yield: %u cycles \n", stop - start);
+
+    // starts off in nanoseconds
+    uint64_t start_time = arch_cycles_to_realtime(start);
+    uint64_t stop_time = arch_cycles_to_realtime(stop);
+    printk("start time: %u us\n", start_time / 1000);
+    printk("stop time:  %u us\n", stop_time / 1000);
+
+    uint64_t diff = stop_time - start_time;
+    printk("time from nautilus entry to before yield: %u us\n", diff / 1000);
 
     printk("Nautilus boot thread yielding (indefinitely)\n");
 
