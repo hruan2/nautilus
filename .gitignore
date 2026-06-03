@@ -86,3 +86,6 @@ ct.out
 
 # gdb scripts
 *.gdb
+
+# csv result files
+*.csv
