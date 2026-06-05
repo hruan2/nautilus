@@ -52,7 +52,7 @@ enum vga_color
     COLOR_WHITE = 15,
 };
 
-uint16_t vga_make_entry (char c, uint8_t attr);
+uint16_t vga_make_entry (uint8_t c, uint8_t attr);
 uint8_t  vga_make_color (enum vga_color fg, enum vga_color bg);
 void     vga_set_cursor(uint8_t x, uint8_t y);
 void     vga_get_cursor(uint8_t *x, uint8_t *y);

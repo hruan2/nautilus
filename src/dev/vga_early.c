@@ -42,8 +42,8 @@
 #define ATTR_CTRL_DATA_READ 0x3c1
 #define ATTR_MODE_CTRL 0x10
 
-uint16_t 
-vga_make_entry (char c, uint8_t color)
+uint16_t
+vga_make_entry (uint8_t c, uint8_t color)
 {
     uint16_t c16 = c;
     uint16_t color16 = color;
