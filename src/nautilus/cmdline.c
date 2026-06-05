@@ -114,6 +114,12 @@ int
 nk_cmdline_dispatch (struct naut_info * naut)
 {
     struct cmdline_state * state = naut->cmdline;
+
+    if (!naut->sys.mb_info || !naut->sys.mb_info->boot_cmd_line) {
+        INFO("no boot command line, skipping cmdline dispatch\n");
+        return 0;
+    }
+
     char * cline = naut->sys.mb_info->boot_cmd_line;
     char * flag_args = NULL;
     char * cursor    = NULL;
