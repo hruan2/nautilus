@@ -90,19 +90,12 @@ arch_detect_mem_map (mmap_info_t *mm_info,
         panic("ERROR: too many memory map entries!\n");
     }
 
-    struct lb_memory_range cur_entry = { 0 };
     ulong_t start = 0;
     ulong_t end = 0;
     int mem_type = 0;
     for (unsigned long entry = 0; entry < total_entries; ++entry) {
         start = round_up(memory_range->start, PAGE_SIZE_4KB);
-        if (entry == total_entries - 1) {
-            // force the memory range to extend to 4GB instead of the 3GB
-            end = 0x100000000UL;
-        }
-        else {
-            end = round_down(memory_range->start + memory_range->size, PAGE_SIZE_4KB);
-        }
+        end = round_down(memory_range->start + memory_range->size, PAGE_SIZE_4KB);
 
         memory_map[entry].addr = start;
         memory_map[entry].len = end - start;
@@ -149,5 +142,19 @@ arch_detect_mem_map (mmap_info_t *mm_info,
                                             + sizeof(struct lb_memory_range));
         mm_info->total_mem += end - start;
         ++mm_info->num_regions;
+    }
+
+    /* If the memory map doesn't reach 4GB, add a reserved entry covering the gap. */
+    ulong_t top = (ulong_t)mm_info->last_pfn << PAGE_SHIFT;
+    if (top < 0x100000000UL && mm_info->num_regions < MAX_MMAP_ENTRIES) {
+        unsigned long entry = mm_info->num_regions;
+        
+        memory_map[entry].addr = top;
+        memory_map[entry].len  = 0x100000000UL - top;
+        memory_map[entry].type = LB_MEM_RESERVED;
+
+        mm_info->last_pfn = 0x100000000UL >> PAGE_SHIFT;
+        mm_info->total_mem += memory_map[entry].len;
+        mm_info->num_regions = entry + 1;
     }
 }
