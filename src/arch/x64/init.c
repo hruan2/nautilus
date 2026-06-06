@@ -32,12 +32,12 @@
 #include <arch/x64/cpu.h>
 
 #include <nautilus/nautilus.h>
-#include <nautilus/arch.h>
+// #include <nautilus/arch.h>
 #include <nautilus/init.h>
 #include <nautilus/paging.h>
 #include <nautilus/spinlock.h>
 #include <nautilus/cb_utils.h>
-#include <nautilus/cpu.h>
+// #include <nautilus/cpu.h>
 #include <nautilus/smp.h>
 #include <nautilus/interrupt.h>
 #include <nautilus/thread.h>
@@ -610,6 +610,15 @@ threaded_init(void) {
     init_syscall_table();
 #endif
 
+    // Signal that boot is complete by writing to the serial port
+    {
+    const char *msg = "NAUTILUS_BOOT_COMPLETE\n";
+    while (*msg) {
+        while (!(inb(0x3f8 + 5) & 0x20));
+        outb(*msg, 0x3f8);
+        msg++;
+    }
+}
     nk_handle_init_stage_launch();
 
     runtime_init();
