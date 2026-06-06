@@ -80,8 +80,6 @@ GLOBAL(nautilus_entry)
     movw %ax, %fs
     movw %ax, %gs
 
-    // save higher order bits of timer before setting
-    movl %ebp, %edx
 
     // This needs to be at least 16-byte aligned
     movq $boot_stack_end, %rsp

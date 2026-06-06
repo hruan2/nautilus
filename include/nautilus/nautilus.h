@@ -245,10 +245,6 @@ struct naut_info {
     struct sys_info sys;
     struct cmdline_state * cmdline;
     struct nk_test_harness * test_info;
-
-    // for use in benchmarking; unused otherwise
-    unsigned long timer_low;
-    unsigned long timer_high;
 };
 
 #ifdef __NAUTILUS_MAIN__
