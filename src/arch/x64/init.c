@@ -187,6 +187,9 @@
 
 extern struct gdt_desc64 gdtr64;
 
+// Add variable to hold TSC entry point
+uint64_t nk_tsc_entry = 0;
+
 #define QUANTUM_IN_NS (1000000000ULL/NAUT_CONFIG_HZ)
 
 struct nk_sched_config sched_cfg = {
@@ -199,6 +202,22 @@ struct nk_sched_config sched_cfg = {
 
 
 
+// Printk goes to the VGA so can't be used for TSC delta output, 
+// so we'll just write directly to COM1 for the TSC delta output. 
+static void com1_putchar(char c) {
+    while (!(inb(0x3f8 + 5) & 0x20));
+    outb(c, 0x3f8);
+}
+static void com1_puts(const char *s) {
+    while (*s) com1_putchar(*s++);
+}
+static void com1_putu64(uint64_t v) {
+    char buf[21];
+    int n = 0;
+    if (!v) { com1_putchar('0'); return; }
+    while (v) { buf[n++] = '0' + (v % 10); v /= 10; }
+    while (n--) com1_putchar(buf[n]);
+}
 
 static int
 sysinfo_init (struct sys_info * sys)
@@ -610,15 +629,11 @@ threaded_init(void) {
     init_syscall_table();
 #endif
 
-    // Signal that boot is complete by writing to the serial port
-    {
-    const char *msg = "NAUTILUS_BOOT_COMPLETE\n";
-    while (*msg) {
-        while (!(inb(0x3f8 + 5) & 0x20));
-        outb(*msg, 0x3f8);
-        msg++;
-    }
-}
+    // Timing from entry to this point
+    uint64_t tsc_delta = rdtsc() - nk_tsc_entry;
+    com1_puts("NAUTILUS_BOOT_COMPLETE TSC_DELTA=");
+    com1_putu64(tsc_delta);
+    com1_putchar('\n');
     nk_handle_init_stage_launch();
 
     runtime_init();
@@ -633,7 +648,6 @@ threaded_init(void) {
     // // starts off in nanoseconds
     // uint64_t start_time = arch_cycles_to_realtime(start);
     // uint64_t stop_time = arch_cycles_to_realtime(stop);
-    // printk("start time: %u us\n", start_time / 1000);
     // printk("stop time:  %u us\n", stop_time / 1000);
 
     // uint64_t diff = stop_time - start_time;

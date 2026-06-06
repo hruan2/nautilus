@@ -33,6 +33,8 @@
 
 .extern boot_stack_init
 .extern threaded_init
+/* Tell linker there is a symbol */
+.extern nk_tsc_entry
 
 #include <asm/lowlevel.h>
 
@@ -44,9 +46,10 @@
  */
 GLOBAL(nautilus_entry)
 
-    /* get timer from time stamp counter; rdtsc stores higher order bits in
-     * edx and lower order in eax
-     */
+    /* capture TSC at payload entry */
+    rdtsc
+    movl %eax, nk_tsc_entry
+    movl %edx, nk_tsc_entry+4
 
     /* get pointer to coreboot tables and stash it */
     movl 4(%esp), %edi

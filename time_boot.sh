@@ -16,11 +16,19 @@ for i in $(seq 1 $RUNS); do
     TMPOUT=$(mktemp)
 
     if [ "$MODE" = "coreboot" ]; then
-        qemu-system-x86_64 -M q35 -bios $ROM \
-            -serial stdio -display none 2>/dev/null >"$TMPOUT" &
+        qemu-system-x86_64 \
+            -M q35 \
+            -bios $ROM \
+            -serial stdio \
+            -display none \
+            2>/dev/null >"$TMPOUT" &
     else
-        qemu-system-x86_64 -m 2048 -serial stdio -display none \
-            -cdrom /home/abn7489/nautilus/nautilus.iso 2>/dev/null >"$TMPOUT" &
+        qemu-system-x86_64 \
+            -m 2048 \
+            -serial stdio \
+            -display none \
+            -cdrom /home/abn7489/nautilus/nautilus.iso \
+            2>/dev/null >"$TMPOUT" &
     fi
     QEMU_PID=$!
     START=$(date +%s%N)
@@ -35,8 +43,9 @@ for i in $(seq 1 $RUNS); do
 
     kill $QEMU_PID 2>/dev/null
     wait $QEMU_PID 2>/dev/null
-    rm -f "$TMPOUT"
 
-    MS=$(( (END - START) / 1000000 ))
-    echo "Run $i: ${MS} ms"
+    WALL_MS=$(( (END - START) / 1000000 ))
+    TSC_DELTA=$(grep -o 'TSC_DELTA=[0-9]*' "$TMPOUT" | cut -d= -f2)
+    echo "Run $i: wall=${WALL_MS}ms tsc_cycles=${TSC_DELTA}"
+    rm -f "$TMPOUT"
 done
