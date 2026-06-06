@@ -30,6 +30,7 @@ tmpbin
 
 # Used by clangd
 .cache
+.clang-format
 
 # LSP-related tools
 .clangd
@@ -86,6 +87,10 @@ ct.out
 
 # gdb scripts
 *.gdb
+*.gdb_history
 
 # csv result files
 *.csv
+
+# vscode settings
+.vscode/
