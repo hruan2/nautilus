@@ -296,7 +296,7 @@ char *script[] = { "sigtest",
 */
 
 void *
-boot_stack_init (unsigned long cbd, unsigned long timer_low, unsigned long timer_high)
+boot_stack_init (unsigned long cbd)
 {
     // (gdb) print *(naut->sys)
     // i.e. dereference naut->sys and print out whatever is there
@@ -309,8 +309,8 @@ boot_stack_init (unsigned long cbd, unsigned long timer_low, unsigned long timer
 
     nk_low_level_memset(naut, 0, sizeof(struct naut_info));
 
-    naut->timer_low = timer_low;
-    naut->timer_high = timer_high;
+    // naut->timer_low = timer_low;
+    // naut->timer_high = timer_high;
 
     // set up display/screen so we can have output -> write out to screen using
     // array of characters in memory; zeroes out screen array (makes all black)
@@ -615,20 +615,20 @@ threaded_init(void) {
     runtime_init();
 
     // stop timer here
-    unsigned long stop = rdtsc();
+    // unsigned long stop = rdtsc();
 
-    // reconstruct start time
-    unsigned long start = naut->timer_low;
-    start |= (naut->timer_high << 32);
+    // // reconstruct start time
+    // unsigned long start = naut->timer_low;
+    // start |= (naut->timer_high << 32);
 
-    // starts off in nanoseconds
-    uint64_t start_time = arch_cycles_to_realtime(start);
-    uint64_t stop_time = arch_cycles_to_realtime(stop);
-    printk("start time: %u us\n", start_time / 1000);
-    printk("stop time:  %u us\n", stop_time / 1000);
+    // // starts off in nanoseconds
+    // uint64_t start_time = arch_cycles_to_realtime(start);
+    // uint64_t stop_time = arch_cycles_to_realtime(stop);
+    // printk("start time: %u us\n", start_time / 1000);
+    // printk("stop time:  %u us\n", stop_time / 1000);
 
-    uint64_t diff = stop_time - start_time;
-    printk("time from nautilus entry to before yield: %u us\n", diff / 1000);
+    // uint64_t diff = stop_time - start_time;
+    // printk("time from nautilus entry to before yield: %u us\n", diff / 1000);
 
     printk("Nautilus boot thread yielding (indefinitely)\n");
 

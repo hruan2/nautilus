@@ -47,9 +47,6 @@ GLOBAL(nautilus_entry)
     /* get timer from time stamp counter; rdtsc stores higher order bits in
      * edx and lower order in eax
      */
-    rdtsc
-    movl %edx, %ebp
-    movl %eax, %esi
 
     /* get pointer to coreboot tables and stash it */
     movl 4(%esp), %edi
