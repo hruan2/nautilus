@@ -189,6 +189,7 @@ extern struct gdt_desc64 gdtr64;
 
 // Add variable to hold TSC entry point
 uint64_t nk_tsc_entry = 0;
+uint64_t nk_tsc_coreboot_start = 0;
 
 #define QUANTUM_IN_NS (1000000000ULL/NAUT_CONFIG_HZ)
 
@@ -630,9 +631,14 @@ threaded_init(void) {
 #endif
 
     // Timing from entry to this point
-    uint64_t tsc_delta = rdtsc() - nk_tsc_entry;
+    uint64_t tsc_stop = rdtsc();
+    uint64_t tsc_delta = tsc_stop - nk_tsc_entry;
     com1_puts("NAUTILUS_BOOT_COMPLETE TSC_DELTA=");
     com1_putu64(tsc_delta);
+    if (nk_tsc_coreboot_start) {
+        com1_puts(" TSC_FIRMWARE=");
+        com1_putu64(tsc_stop - nk_tsc_coreboot_start);
+    }
     com1_putchar('\n');
     nk_handle_init_stage_launch();
 

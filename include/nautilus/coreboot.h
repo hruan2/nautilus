@@ -169,6 +169,18 @@ struct lb_memory {
 	uint32_t size;
 	struct lb_memory_range map[];
 };
+struct timestamp_entry {
+	uint32_t entry_id;
+	uint64_t entry_stamp;
+} __attribute__((packed));
+
+struct timestamp_table {
+	uint64_t base_time;
+	uint16_t max_entries;
+	uint16_t tick_freq_mhz;
+	uint32_t num_entries;
+	struct timestamp_entry entries[];
+} __attribute__((packed));
 
 struct lb_pcie {
 	uint32_t tag;

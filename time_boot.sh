@@ -46,6 +46,11 @@ for i in $(seq 1 $RUNS); do
 
     WALL_MS=$(( (END - START) / 1000000 ))
     TSC_DELTA=$(grep -o 'TSC_DELTA=[0-9]*' "$TMPOUT" | cut -d= -f2)
-    echo "Run $i: wall=${WALL_MS}ms tsc_cycles=${TSC_DELTA}"
+    TSC_FIRMWARE=$(grep -o 'TSC_FIRMWARE=[0-9]*' "$TMPOUT" | cut -d= -f2)
+    if [ -n "$TSC_FIRMWARE" ]; then
+        echo "Run $i: wall=${WALL_MS}ms tsc_nautilus=${TSC_DELTA} tsc_firmware=${TSC_FIRMWARE}"
+    else
+        echo "Run $i: wall=${WALL_MS}ms tsc_nautilus=${TSC_DELTA}"
+    fi
     rm -f "$TMPOUT"
 done

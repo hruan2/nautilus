@@ -31,6 +31,7 @@
 #include <nautilus/elf.h>
 
 extern addr_t _bssEnd;
+extern uint64_t nk_tsc_coreboot_start;
 
 void coreboot_parse(ulong_t cbd)
 {
@@ -71,6 +72,15 @@ void coreboot_parse(ulong_t cbd)
             case LB_TAG_ACPI_RSDP: {
                 struct lb_acpi_rsdp *rsdp = (struct lb_acpi_rsdp *)record;
                 DEBUG_PRINT("ACPI: rsdp=0x%x\n", rsdp->rsdp_pointer);
+                break;
+            }
+
+            case LB_TAG_TIMESTAMPS: {
+                struct lb_cbmem_ref *ts_ref = (struct lb_cbmem_ref *)record;
+                struct timestamp_table *ts = (struct timestamp_table *)(uintptr_t)ts_ref->cbmem_addr;
+                if (ts && ts->num_entries > 0) {
+                    nk_tsc_coreboot_start = ts->base_time + ts->entries[0].entry_stamp;
+                }
                 break;
             }
 
