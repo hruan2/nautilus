@@ -3,7 +3,7 @@ export PATH=/home/pdinda/HANDOUT/tools/bin:$PATH
 
 MODE=$1
 MARKER="NAUTILUS_BOOT_COMPLETE"
-RUNS=5
+RUNS=20
 ROM=/files10/cs446-2026-spring/abn7489/coreboot/build/coreboot.rom
 CBFS=/files10/cs446-2026-spring/abn7489/cbfstool
 
@@ -18,6 +18,8 @@ for i in $(seq 1 $RUNS); do
     if [ "$MODE" = "coreboot" ]; then
         qemu-system-x86_64 \
             -M q35 \
+            -enable-kvm \
+            -cpu host \
             -bios $ROM \
             -serial stdio \
             -display none \
@@ -25,6 +27,8 @@ for i in $(seq 1 $RUNS); do
     else
         qemu-system-x86_64 \
             -m 2048 \
+            -enable-kvm \
+            -cpu host \
             -serial stdio \
             -display none \
             -cdrom /home/abn7489/nautilus/nautilus.iso \
